@@ -5,7 +5,7 @@ from graphene_django import DjangoObjectType
 from .models import Class, Student
 
 
-class ClassType(DjangoOjectType):
+class ClassType(DjangoObjectType):
     class Meta:
         model = Class
 
@@ -16,8 +16,12 @@ class StudentType(DjangoObjectType):
 
 
 class Query(object):
-    hello = graphene.String()
+    all_classes = graphene.List(ClassType)
+    all_students = graphene.List(StudentType)
 
 
-    resolve_hello(self, info, **kwargs):
-        return "world"
+    def resolve_all_classes(self, info, **kwargs):
+        return Class.objects.all()
+
+    def resolve_all_students(self, info, **kwargs):
+        return Student.objects.select_related('std_class').all()
